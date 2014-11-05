@@ -1,0 +1,14 @@
+{
+    "applications": {
+        "Boocle": {
+            "applicationId": "hdxwc8xvBGxbQiJm5e2VYvPtOhOj9xxHJNJUTghr", 
+            "masterKey": "HvYP13W9dBVTXirDFrBzKjyWMENfru1gHniSleug"
+        }, 
+        "_default": {
+            "link": "Boocle"
+        }
+    }, 
+    "global": {
+        "parseVersion": "1.3.1"
+    }
+}

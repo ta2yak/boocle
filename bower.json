@@ -1,0 +1,27 @@
+{
+  "name": "Boocle",
+  "version": "0.0.0",
+  "authors": [
+    "kawasaki tatsuya"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "public/bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "underscore": "http://github.com/jashkenas/underscore.git#>=1.5.0",
+    "jquery": "http://github.com/jquery/jquery.git#~2.1.1",
+    "react": "http://github.com/facebook/react-bower.git#~0.11.2",
+    "requirejs": "http://github.com/jrburke/requirejs-bower.git#~2.1.15",
+    "require-jsx": "http://github.com/ericclemmons/require-jsx.git",
+    "backbone": "http://github.com/jashkenas/backbone.git#~1.1.2",
+    "bootstrap": "http://github.com/twbs/bootstrap.git#~3.2.0",
+    "bootstrap-sweetalert": "http://github.com/lipis/bootstrap-sweetalert.git#~0.4.2",
+    "moment": "https://github.com/moment/moment.git#~2.8.3"
+  }
+}

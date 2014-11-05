@@ -1,0 +1,13 @@
+{
+  "name": "require-jsx",
+  "homepage": "https://github.com/ericclemmons/require-jsx",
+  "_release": "e6315ab686",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "e6315ab6864480943302f01b9cd7eba315e045db"
+  },
+  "_source": "http://github.com/ericclemmons/require-jsx.git",
+  "_target": "*",
+  "_originalSource": "http://github.com/ericclemmons/require-jsx.git"
+}
