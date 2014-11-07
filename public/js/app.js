@@ -70,7 +70,15 @@ require.config({
             '/bower_components/moment/min/moment.min'
         ],
 
+        pace:[
+            '/bower_components/pace/pace.min'
+        ],
+
     }
+});
+
+require(['pace'], function(Pace){
+    Pace.start();
 });
 
 require(['parse'], function(Parse) {

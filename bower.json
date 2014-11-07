@@ -22,6 +22,7 @@
     "backbone": "http://github.com/jashkenas/backbone.git#~1.1.2",
     "bootstrap": "http://github.com/twbs/bootstrap.git#~3.2.0",
     "bootstrap-sweetalert": "http://github.com/lipis/bootstrap-sweetalert.git#~0.4.2",
-    "moment": "https://github.com/moment/moment.git#~2.8.3"
+    "moment": "https://github.com/moment/moment.git#~2.8.3",
+    "pace": "https://github.com/HubSpot/pace.git#~1.0.2"
   }
 }
