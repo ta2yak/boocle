@@ -219,7 +219,8 @@ function(React, $, _,
                     circleMembers.add({
                       circle: obj,
                       member: _member,
-                      readingNo: index+1
+                      readingNo: index+1,
+                      isSkip: false
                     });
                   });
 

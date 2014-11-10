@@ -7,9 +7,9 @@ define(['parse', 'underscore',
      		return obj.get('readingNo');
     	},
 
-		fetchReadingCircleMembers: function(circleId, successCallback, failedCallback){
-	      this.query = new Parse.Query(ReadingCircle);
-	      this.query.equalTo("circle", circleId);
+		fetchReadingCircleMembers: function(circle, successCallback, failedCallback){
+	      this.query = new Parse.Query(ReadingCircleMember);
+	      this.query.equalTo("circle", circle);
 	      this.fetch({
 	        success: function(data){
 	        	successCallback(data);
