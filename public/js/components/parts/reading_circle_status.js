@@ -277,22 +277,50 @@ function(React, $, _, moment,
       });
     },
     skipReading: function(){
-      this.props.member.toSkip(function(){
-        swal("スキップしました", "", "success");
-        this.props.refleshCallback();
-      }.bind(this), 
-      function(){
-        swal("ステータスの変更に失敗しました", "再度実行してください", "error");
+
+      swal({
+        title: "輪読をスキップしますか?",
+        text: "",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonClass: "btn-info",
+        confirmButtonText: "スキップする",
+        closeOnConfirm: false
+      },
+      function(isConfirm){
+
+        this.props.member.toSkip(function(){
+          swal("スキップしました", "", "success");
+          this.props.refleshCallback();
+        }.bind(this), 
+        function(){
+          swal("ステータスの変更に失敗しました", "再度実行してください", "error");
+        }.bind(this));
+
       }.bind(this));
 
     },
     finishReading: function(){
-      this.props.member.toFinish(function(){
-        swal("読了しました", "", "success");
-        this.props.refleshCallback();
-      }.bind(this), 
-      function(){
-        swal("ステータスの変更に失敗しました", "再度実行してください", "error");
+
+      swal({
+        title: "読了に変更しますか?",
+        text: "",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonClass: "btn-info",
+        confirmButtonText: "読了とする",
+        closeOnConfirm: false
+      },
+      function(isConfirm){
+
+        this.props.member.toFinish(function(){
+          swal("読了しました", "", "success");
+          this.props.refleshCallback();
+        }.bind(this), 
+        function(){
+          swal("ステータスの変更に失敗しました", "再度実行してください", "error");
+        }.bind(this));
+
       }.bind(this));
 
     },
@@ -300,6 +328,7 @@ function(React, $, _, moment,
 
       var finished = this.props.member.isFinish();
       var skiped= this.props.member.isSkip();
+      var me = this.state.user ? (this.state.user.get("username") === Parse.User.current().get("username")) : false;
       var finishedClass = finished || skiped ? "list-group-item disabled" : "list-group-item";
 
       return (
@@ -316,8 +345,8 @@ function(React, $, _, moment,
             </div>
             <div className="col-md-3">
               <div className="btn-group">
-                { finished || skiped ? null : <button className="btn btn-info btn-xs" onClick={this.finishReading} ><span>読了</span></button> }
-                { finished || skiped ? null : <button className="btn btn-warning btn-xs" onClick={this.skipReading} ><span>スキップ</span></button> }
+                { me && !finished && !skiped ? <button className="btn btn-info btn-xs" onClick={this.finishReading} ><span>読了</span></button> : null }
+                { me && !finished && !skiped ? <button className="btn btn-warning btn-xs" onClick={this.skipReading} ><span>スキップ</span></button> : null}
               </div>
             </div>
           </div>
