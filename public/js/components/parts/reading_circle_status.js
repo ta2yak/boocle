@@ -53,7 +53,8 @@ function(React, $, _, moment,
             </div>
           </div>
           <br/>
-          <ReadingCircleStatusList collection={this.state.collection} refleshCallback={this.props.refleshCallback}/>
+          <ReadingCircleStatusList collection={this.state.collection} 
+                                   refleshCallback={this.props.refleshCallback}/>
         </div>
       );
     }
@@ -63,7 +64,9 @@ function(React, $, _, moment,
     render: function() {
       var readingCircleStatusNodes = this.props.collection.map(function (_circle) {
         return (
-          <ReadingCircleStatus circle={_circle} key={_circle.id} refleshCallback={this.props.refleshCallback} />
+          <ReadingCircleStatus circle={_circle} 
+                               key={_circle.id} 
+                               refleshCallback={this.props.refleshCallback} />
         );
       }.bind(this));
       return (
@@ -82,14 +85,18 @@ function(React, $, _, moment,
         bookTitle: null,
         group: null,
         bookOwner: null,
-        members: new GroupMemberListModel()
+        members: new ReadingCircleMemberListModel()
       };
     },
     componentDidMount: function() {
+      this.refleshBox();
+    },
+    refleshBox: function(){
       this.setState({
         startDate: this.props.circle.get("start")
       });
 
+      // 書籍情報を取得
       this.props.circle.get("bookTitle").fetch({
         success: function(bookTitle){
           this.setState({
@@ -101,6 +108,7 @@ function(React, $, _, moment,
         }
       });
 
+      // 書籍所有者を取得
       this.props.circle.get("bookOwner").fetch({
         success: function(bookOwner){
           this.setState({
@@ -112,29 +120,28 @@ function(React, $, _, moment,
         }
       });
 
+      // 輪読実施グループを取得
       this.props.circle.get("group").fetch({
         success: function(group){
           this.setState({
             group: group
           })
-
-          this.state.members.fetchGroupMembers(group,
-                                              function(members){
-                                                this.setState({
-                                                  members: members
-                                                })
-                                              }.bind(this),
-                                              function(error){
-                                                swal("輪読グループメンバーの取得に失敗しました", "ブラウザをリロードして再度実行してください", "error");
-                                              }.bind(this));
-
         }.bind(this),
         error: function(group, error){
           swal("輪読グループの取得に失敗しました", "ブラウザをリロードして再度実行してください", "error");
         }
       });
-    },
-    handleMemberManagerLink: function(){
+
+      // 輪読メンバーを取得
+      this.state.members.fetchReadingCircleMembers(this.props.circle,
+                                                  function(members){
+                                                    this.setState({
+                                                      members: members
+                                                    })
+                                                  }.bind(this),
+                                                  function(error){
+                                                    swal("輪読グループメンバーの取得に失敗しました", "ブラウザをリロードして再度実行してください", "error");
+                                                  }.bind(this));
 
     },
     finishReadingCircle: function(){
@@ -180,9 +187,26 @@ function(React, $, _, moment,
       var cycle = parseInt(this.props.circle.get("cycleDay")); // サイクル日数
 
       var optionMembers = members.map(function(member, i) {
+
         var cycleDays = (i == 0) ? 0 : cycle;
-        startDate.add(cycleDays, 'days');
-        return <Member member={member} key={member.id} order={i+1} start={startDate.fromNow()}/>
+
+        var start = "";
+        if(member.isSkip()){
+          start = "Skiped";
+          startDate = moment(String(member.get("skipedAt"))); // 開始日をリセットする
+        }else　if(member.isFinish()){
+          start = "Finished";
+          startDate = moment(String(member.get("finishedAt"))); // 開始日をリセットする
+        }else{
+          startDate.add(cycleDays, 'days');
+          start = startDate.fromNow();
+        }
+
+        return <Member member={member} 
+                       key={member.id} 
+                       order={i+1} 
+                       start={start} 
+                       refleshCallback={this.refleshBox}/>
       }.bind(this));
 
       return (
@@ -232,29 +256,70 @@ function(React, $, _, moment,
       };
     },
     componentDidMount: function() {
-      this.props.member.get("user").fetch({
-        success:function(user){
-          this.setState({
-            user: user
-          })
+      this.props.member.get("member").fetch({
+        success:function(member){
+
+          member.get("user").fetch({
+            success:function(user){
+              this.setState({
+                user: user
+              })
+            }.bind(this),
+            error: function(user, error){
+               swal("ユーザ情報が取得できませんでした", "再度実行してください", "error");
+            }
+          });
+
         }.bind(this),
         error: function(user, error){
            swal("ユーザ情報が取得できませんでした", "再度実行してください", "error");
         }
       });
     },
+    skipReading: function(){
+      this.props.member.toSkip(function(){
+        swal("スキップしました", "", "success");
+        this.props.refleshCallback();
+      }.bind(this), 
+      function(){
+        swal("ステータスの変更に失敗しました", "再度実行してください", "error");
+      }.bind(this));
+
+    },
+    finishReading: function(){
+      this.props.member.toFinish(function(){
+        swal("読了しました", "", "success");
+        this.props.refleshCallback();
+      }.bind(this), 
+      function(){
+        swal("ステータスの変更に失敗しました", "再度実行してください", "error");
+      }.bind(this));
+
+    },
     render: function() {
 
+      var finished = this.props.member.isFinish();
+      var skiped= this.props.member.isSkip();
+      var finishedClass = finished || skiped ? "list-group-item disabled" : "list-group-item";
+
       return (
-        <li className="list-group-item">
+        <li className={finishedClass}>
           <div className="row">
+            <div className="col-md-1">
+              <span className="label label-primary">{this.props.order}</span>
+            </div>
             <div className="col-md-2">
               <span className="label label-primary">{this.props.start}</span>
             </div>
-            <div className="col-md-8">
+            <div className="col-md-6">
               { this.state.user ? <span>{this.state.user.get("screenname")}</span> : null }
             </div>
-            <span className="badge">{this.props.order}</span>
+            <div className="col-md-3">
+              <div className="btn-group">
+                { finished || skiped ? null : <button className="btn btn-info btn-xs" onClick={this.finishReading} ><span>読了</span></button> }
+                { finished || skiped ? null : <button className="btn btn-warning btn-xs" onClick={this.skipReading} ><span>スキップ</span></button> }
+              </div>
+            </div>
           </div>
         </li>
       );
