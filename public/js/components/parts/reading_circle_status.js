@@ -5,13 +5,45 @@
 */
 define(['react', "jquery", "underscore", "moment",
         "models/group_member_list", 
+        "models/reading_circle_list", 
         "models/reading_circle_member_list"],
 function(React, $, _, moment,
          GroupMemberListModel,
+         ReadingCircleListModel,
          ReadingCircleMemberListModel){
 
 
   var ReadingCircleStatusContainer = React.createClass({
+    getInitialState: function() {
+      return {
+        collection: new ReadingCircleListModel()
+      };
+    },
+    componentDidMount: function() {
+      this.refleshBox();
+    },
+    componentWillReceiveProps: function(nextProps) {
+      if(nextProps.updateStatus){
+        this.refleshBox();
+      }
+    },
+    componentDidUpdate: function() {
+      // リクエストが以上に発生するようになるので使用をやめる
+      // お互いの状況が反映されない問題が発生する
+      //this.refleshBox();
+    },
+    refleshBox: function(){
+      this.state.collection.fetchReadingCircles(
+        function(circles){
+          this.setState({
+            collection: circles
+          });
+        }.bind(this),
+        function(error){
+          swal("実施中の輪読の取得に失敗しました", "ブラウザをリロードして再度実行してください", "error");
+        }
+      );
+    },
     render: function() {
       return (
         <div>
@@ -21,7 +53,7 @@ function(React, $, _, moment,
             </div>
           </div>
           <br/>
-          <ReadingCircleStatusList collection={this.props.collection} refleshCallback={this.props.refleshCallback}/>
+          <ReadingCircleStatusList collection={this.state.collection} refleshCallback={this.props.refleshCallback}/>
         </div>
       );
     }

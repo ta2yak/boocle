@@ -32,30 +32,20 @@ function(React, $, _,
   var HomeBox = React.createClass({
     getInitialState: function() {
       return {
-        collection: new ReadingCircleListModel()
+        updateStatus: false
       };
     },
-    componentDidMount: function() {
-      this.refleshBox();
-    },
     refleshBox: function(){
-      this.state.collection.fetchReadingCircles(
-        function(circles){
-          this.setState({
-            collection: circles
-          });
-        }.bind(this),
-        function(error){
-          swal("実施中の輪読の取得に失敗しました", "ブラウザをリロードして再度実行してください", "error");
-        }
-      );
+      this.setState({
+        updateStatus: true
+      })
     },
     render: function() {
       return (
         <div>
-          <ReadingCircleStatusView collection={this.state.collection} refleshCallback={this.refleshBox}/>
+          <ReadingCircleStatusView refleshCallback={this.refleshBox} updateStatus={this.state.updateStatus}/>
           <hr/>
-          <LaunchReadingCircleView collection={this.state.collection} refleshCallback={this.refleshBox}/>
+          <LaunchReadingCircleView refleshCallback={this.refleshBox} updateStatus={this.state.updateStatus}/>
         </div>
       );
     }

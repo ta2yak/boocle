@@ -7,39 +7,34 @@ define(['react', "jquery", "underscore",
         "models/book_owner_list", 
         "models/group_list", 
         "models/group_member_list", 
+        "models/reading_circle_list",
         "models/reading_circle_member_list"],
 function(React, $, _, 
          BookOwnerListModel, 
          GroupListModel, 
          GroupMemberListModel,
+         ReadingCircleListModel,
          ReadingCircleMemberListModel){
 
 
   var LaunchReadingCircleContainer = React.createClass({
-    render: function() {
-      return (
-        <div>
-          <div className="row">
-            <div className="col-md-12">
-              <h1>輪読を始める</h1>
-            </div>
-          </div>
-          <br/>
-          <StartableBooks collection={this.props.collection} refleshCallback={this.props.refleshCallback}/>
-        </div>
-      );
-    }
-  });
-
-  var StartableBooks = React.createClass({
     getInitialState: function() {
       return {
         collection: new BookOwnerListModel()
       };
     },
     componentDidMount: function() {
-      console.log("componentDidMount");
       this.refleshBox();
+    },
+    componentWillReceiveProps: function(nextProps) {
+      if(nextProps.updateStatus){
+        this.refleshBox();
+      }
+    },
+    componentDidUpdate: function() {
+      // リクエストが以上に発生するようになるので使用をやめる
+      // お互いの状況が反映されない問題が発生する
+      //this.refleshBox();
     },
     refleshBox: function(){
       this.state.collection.fetchStartableBooks(
@@ -53,14 +48,26 @@ function(React, $, _,
         }
       );
     },
-    refleshBoxWithParent: function(){
-      this.refleshBox();
-      this.props.refleshCallback();      
-    },
     render: function() {
-      var startableBooksNodes = this.state.collection.map(function (_bookOwner) {
+      return (
+        <div>
+          <div className="row">
+            <div className="col-md-12">
+              <h1>輪読を始める</h1>
+            </div>
+          </div>
+          <br/>
+          <StartableBooks collection={this.state.collection} refleshCallback={this.props.refleshCallback}/>
+        </div>
+      );
+    }
+  });
+
+  var StartableBooks = React.createClass({
+    render: function() {
+      var startableBooksNodes = this.props.collection.map(function (_bookOwner) {
         return (
-          <StartableBookRow bookOwner={_bookOwner}　key={_bookOwner.id} collection={this.props.collection} refleshCallback={this.refleshBoxWithParent} />
+          <StartableBookRow bookOwner={_bookOwner}　key={_bookOwner.id} refleshCallback={this.props.refleshCallback} />
         );
       }.bind(this));
       return (
@@ -197,7 +204,10 @@ function(React, $, _,
           finished: false
         };
 
-        this.props.collection.create(_circle, 
+
+        $("#" + this.generateModalId()).modal('hide');
+        var circles = new ReadingCircleListModel();
+        circles.create(_circle, 
           {
             success:function(obj){
               _circle.bookOwner.set("used", true);
@@ -215,7 +225,6 @@ function(React, $, _,
 
                   Parse.Object.saveAll(circleMembers, {
                     success: function(){
-                      $("#" + this.generateModalId()).modal('hide')
                       swal("輪読を開始しました", "", "success");
                       this.props.refleshCallback();
                     }.bind(this),
