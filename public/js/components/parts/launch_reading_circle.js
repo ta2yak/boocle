@@ -249,6 +249,85 @@ function(React, $, _,
       }.bind(this));
 
     },
+    removeRow: function(member){
+      // 対象メンバーを一人削除する
+      this.setState({
+        members: this.state.members.remove(member)
+      })
+    },
+    upRow: function(currentOrder){
+
+      // オーダー表示値をArrayのIndexに変換し前後のメンバーインスタンスを取得する
+      var currentOrderArrayIndex = currentOrder - 1;
+      var frontMember = this.state.members.at(currentOrderArrayIndex-1)
+      var backMember = this.state.members.at(currentOrderArrayIndex)
+
+      //メンバーインスタンスが取得できない場合は何もしない(一番先頭、もしくは一番最後を想定)
+      if(!frontMember || !backMember) return;
+
+
+      // 輪読順を入替つつリストの順番を入れ替える
+      var frontMemberReadingNo = frontMember.get("readingNo");
+      var backMemberReadingNo = backMember.get("readingNo");
+
+      var sortedMembers = new GroupMemberListModel();
+
+      this.state.members.each(function(_member, i){
+        if(i < currentOrderArrayIndex - 1){
+          sortedMembers.add(_member);
+        }
+      });
+
+      sortedMembers.add(backMember.set("readingNo", frontMemberReadingNo));
+      sortedMembers.add(frontMember.set("readingNo", backMemberReadingNo));
+
+      this.state.members.each(function(_member, i){
+        if(currentOrderArrayIndex < i){
+          sortedMembers.add(_member);
+        }
+      });
+
+      // リストを再設定し画面に反映する
+      this.setState({
+        members: sortedMembers
+      })
+    },
+    downRow: function(currentOrder){
+
+      // オーダー表示値をArrayのIndexに変換し前後のメンバーインスタンスを取得する
+      var currentOrderArrayIndex = currentOrder - 1;
+      var frontMember = this.state.members.at(currentOrderArrayIndex)
+      var backMember = this.state.members.at(currentOrderArrayIndex+1)
+
+      //メンバーインスタンスが取得できない場合は何もしない(一番先頭、もしくは一番最後を想定)
+      if(!frontMember || !backMember) return;
+
+      // 輪読順を入替つつリストの順番を入れ替える
+      var frontMemberReadingNo = frontMember.get("readingNo");
+      var backMemberReadingNo = backMember.get("readingNo");
+
+      var sortedMembers = new GroupMemberListModel();
+
+      this.state.members.each(function(_member, i){
+        if(i < currentOrderArrayIndex){
+          sortedMembers.add(_member);
+        }
+      });
+
+      sortedMembers.add(backMember.set("readingNo", frontMemberReadingNo));
+      sortedMembers.add(frontMember.set("readingNo", backMemberReadingNo));
+
+      this.state.members.each(function(_member, i){
+        if(currentOrderArrayIndex + 1 < i){
+          sortedMembers.add(_member);
+        }
+      });
+
+      // リストを再設定し画面に反映する
+      this.setState({
+        members: sortedMembers
+      })
+    },
     generateModalId: function(){
       return "startModal" + (this.state.book ? this.state.book.id : 0);
     },
@@ -265,8 +344,11 @@ function(React, $, _,
 
       var members = this.state.members;
       var optionMembers = members.map(function(member, i) {
-            return <Member member={member} key={member.id} order={i+1}/>
-      });
+            return <Member member={member} key={member.id+":"+i} order={i+1} 
+                           upCallback={this.upRow}
+                           downCallback={this.downRow}
+                           removeCallback={this.removeRow}/>
+      }.bind(this));
 
       return (
         <tr>
@@ -335,16 +417,30 @@ function(React, $, _,
         }
       });
     },
+    remove: function(){
+      this.props.removeCallback(this.props.member);
+    },
+    up: function(){
+      this.props.upCallback(this.props.order);
+    },
+    down: function(){
+      this.props.downCallback(this.props.order);
+    },
     render: function() {
 
       return (
         <li className="list-group-item">
           <div className="row">
-            <div className="col-md-10">
+            <div className="col-md-6">
               { this.state.user ? <span>{this.state.user.get("screenname")}</span> : null }
             </div>
             <div className="col-md-2">
               <span className="badge">{this.props.order}</span>
+            </div>
+            <div className="col-md-4">
+              <button type="button" className="btn btn-default" onClick={this.up}>↑</button>
+              <button type="button" className="btn btn-default" onClick={this.down}>↓</button>
+              <button type="button" className="btn btn-default" onClick={this.remove}>外す</button>
             </div>
           </div>
         </li>
