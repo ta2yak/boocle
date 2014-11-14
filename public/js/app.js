@@ -15,11 +15,15 @@ require.config({
         },
         bootstrap: {
             deps: ['jquery'],
-            exports: 'jquery'
+            exports: 'bootstrap'
         },
         bootstrapSweetAlert: {
             deps: ['bootstrap'],
             exports: 'BootstrapSweetAlert'
+        },
+        bootstrapStarRating: {
+            deps: ['jquery', 'bootstrap'],
+            exports: 'bootstrapStarRating'
         },
         parse: {
             deps: ['jquery', 'underscore'],
@@ -66,6 +70,10 @@ require.config({
             '/bower_components/bootstrap-sweetalert/lib/sweet-alert.min'
         ],
 
+        bootstrapStarRating:[
+            '/bower_components/bootstrap-star-rating/js/star-rating.min'
+        ],
+
         moment:[
             '/bower_components/moment/min/moment.min'
         ],
@@ -87,4 +95,5 @@ require(['parse'], function(Parse) {
 
 require(['bootstrap']);
 require(['bootstrapSweetAlert']);
+require(['bootstrapStarRating']);
 require(["jsx!auth"]);

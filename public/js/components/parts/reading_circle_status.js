@@ -183,6 +183,7 @@ function(React, $, _, moment,
     render: function() {
 
       var members = this.state.members;
+      var circle = this.props.circle;
       var startDate = moment(String(this.props.circle.get("start"))); // 開始日(Moment)
       var cycle = parseInt(this.props.circle.get("cycleDay")); // サイクル日数
 
@@ -202,7 +203,8 @@ function(React, $, _, moment,
           start = startDate.fromNow();
         }
 
-        return <Member member={member} 
+        return <Member member={member}
+                       circle={circle} 
                        key={member.id} 
                        order={i+1} 
                        start={start} 
@@ -275,6 +277,24 @@ function(React, $, _, moment,
            swal("ユーザ情報が取得できませんでした", "再度実行してください", "error");
         }
       });
+
+      $(".rating", this.getDOMNode()).rating({
+        size: "sm",
+        showClear: false,
+        clearCaption: "0点",
+        starCaptions:{
+          0.5: '1点',
+          1:   '2点',
+          1.5: '3点',
+          2:   '4点',
+          2.5: '5点',
+          3:   '6点',
+          3.5: '7点',
+          4:   '8点',
+          4.5: '9点',
+          5:   '10点'
+        }
+      });
     },
     skipReading: function(){
 
@@ -313,9 +333,16 @@ function(React, $, _, moment,
       },
       function(isConfirm){
 
-        this.props.member.toFinish(function(){
+        var rating = this.refs.rating.getDOMNode().value * 2;
+        var comment = this.refs.comment.getDOMNode().value;
+
+        this.props.member.toFinish({
+          rating: rating,
+          comment: comment
+        }, function(){
           swal("読了しました", "", "success");
           this.props.refleshCallback();
+          $("#" + this.generateModalId()).modal("hide");
         }.bind(this), 
         function(){
           swal("ステータスの変更に失敗しました", "再度実行してください", "error");
@@ -324,7 +351,14 @@ function(React, $, _, moment,
       }.bind(this));
 
     },
+    generateModalId: function(){
+      return "completeModal" + this.props.circle.id;
+    },
     render: function() {
+
+      // 一意のIDを生成する
+      var dataTarget = "#" + this.generateModalId();
+      var dataId     = this.generateModalId();
 
       var finished = this.props.member.isFinish();
       var skiped= this.props.member.isSkip();
@@ -345,15 +379,73 @@ function(React, $, _, moment,
             </div>
             <div className="col-md-3">
               <div className="btn-group">
-                { me && !finished && !skiped ? <button className="btn btn-info btn-xs" onClick={this.finishReading} ><span>読了</span></button> : null }
+                { me && !finished && !skiped ? <button className="btn btn-info btn-xs" data-toggle="modal" data-target={dataTarget}><span>読了</span></button> : null }
                 { me && !finished && !skiped ? <button className="btn btn-warning btn-xs" onClick={this.skipReading} ><span>スキップ</span></button> : null}
+              </div>
+              <div className="modal fade" id={dataId} role="dialog" aria-hidden="true">
+                <div className="modal-dialog">
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <button type="button" className="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span className="sr-only">Close</span></button>
+                      <h4 className="modal-title">書評を入力しましょう</h4>
+                    </div>
+                    <div className="modal-body">
+                      <label>評価 10段階</label>
+                      <input type="number" className="rating" ref="rating" />
+                      <hr/>
+                      <textarea className="form-control" rows="5"  ref="comment"/>
+                    </div>
+                    <div className="modal-footer">
+                      <button type="button" className="btn btn-info" onClick={this.finishReading}>読了</button>
+                      <button type="button" className="btn btn-default" data-dismiss="modal">キャンセル</button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+          {this.props.member.get("rating") ? <Rating member={this.props.member}/> : null}
         </li>
       );
     }
   });
+
+  var Rating = React.createClass({
+    h: function(text){
+      if(!text) return null;
+
+      text = text + "";
+      text = text.replace(/\r\n/g, '\n');
+      text = text.replace(/\r/g, '\n');
+      var lines = text.split('\n');
+
+      var commentNodes = _.map(lines, function(_line){
+        return (
+          <p>{_line}</p>
+        );
+      });
+
+      return commentNodes;
+    },
+    render: function() {
+
+      var commentNode = this.h(this.props.member.get("comment"));
+
+      return (
+        <div>
+          <br/>
+          <div className="row">
+            <div className="col-md-2">
+              {this.props.member.get("rating")} / 10
+            </div>
+            <div className="col-md-10">
+              {commentNode}
+            </div>
+          </div>
+        </div>
+      );
+    }
+  });  
 
 
   return ReadingCircleStatusContainer;

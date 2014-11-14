@@ -23,6 +23,7 @@
     "bootstrap": "http://github.com/twbs/bootstrap.git#~3.2.0",
     "bootstrap-sweetalert": "http://github.com/lipis/bootstrap-sweetalert.git#~0.4.2",
     "moment": "https://github.com/moment/moment.git#~2.8.3",
-    "pace": "https://github.com/HubSpot/pace.git#~1.0.2"
+    "pace": "https://github.com/HubSpot/pace.git#~1.0.2",
+    "bootstrap-star-rating": "https://github.com/kartik-v/bootstrap-star-rating.git#~3.2.0"
   }
 }
