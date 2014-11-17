@@ -4,10 +4,12 @@
 *
 */
 define(['react', "jquery", "underscore", "moment",
+        "jsx!components/parts/comment",
         "models/group_member_list", 
         "models/reading_circle_list", 
         "models/reading_circle_member_list"],
 function(React, $, _, moment,
+         Comment, 
          GroupMemberListModel,
          ReadingCircleListModel,
          ReadingCircleMemberListModel){
@@ -476,6 +478,9 @@ function(React, $, _, moment,
     generateModalId: function(){
       return "resultCollapse" + this.props.member.id;
     },
+    generateCommentId: function(){
+      return "comment" + this.props.member.id;
+    },
     render: function() {
 
       var commentNode = this.h(this.props.member.get("comment"));
@@ -483,22 +488,27 @@ function(React, $, _, moment,
       var dataTarget = "#" + this.generateModalId();
       var dataId     = this.generateModalId();
 
+      var dataCommentId     = this.generateCommentId();
+
       return (
         <div>
           <div className="row">
             <br/>
-            <div className="col-md-10">
+            <div className="col-md-8">
+                <Comment dataId={dataCommentId} parent={this.props.member} buttonClass="btn-info btn-xs"/>
             </div>
             <div className="col-md-2">
-              <button type="button" className="btn btn-info btn-xs" data-toggle="collapse" data-target={dataTarget} aria-expanded="true" aria-controls={dataId}>
-                書評を読む
-              </button>
+                <strong className="pull-right">{this.props.member.get("rating")} / 10</strong>
+            </div>
+            <div className="col-md-2">
+                <button type="button" className="btn btn-info btn-xs" data-toggle="collapse" data-target={dataTarget} aria-expanded="true" aria-controls={dataId}>
+                  書評を読む
+                </button>
             </div>
             <div className="col-md-12">
               <div id={dataId} className="collapse">
                 <div className="row">
                   <div className="col-md-2">
-                    {this.props.member.get("rating")} / 10
                   </div>
                   <div className="col-md-10">
                     {commentNode}

@@ -9,7 +9,7 @@ define(['parse', 'underscore',
 
 		fetchComments: function(obj, successCallback, failedCallback){
 	      this.query = new Parse.Query(Comment);
-	      this.query.equalTo("parent", obj);
+	      this.query.equalTo("parent", obj.id);
 	      this.fetch({
 	        success: function(data){
 	        	successCallback(data);
