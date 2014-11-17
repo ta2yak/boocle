@@ -1,7 +1,9 @@
 define(['react', "jquery", "underscore", 
-        "models/session", "models/book_title_list",  "models/book_owner_list", 
+        "jsx!components/parts/comment",
+        "models/session", "models/book_title_list",  "models/book_owner_list",
         "mixins/authority"],
 function(React, $, _, 
+         Comment, 
          SessionManager, BookTitleListModel, BookOwnerListModel, 
          AuthorityMixin){
 
@@ -147,7 +149,7 @@ function(React, $, _,
         );
       }.bind(this));
       return (
-        <div>
+        <div className="table-responsive">
           <table className="table table-condensed table-hover">
             <thead>
               <tr>
@@ -225,30 +227,40 @@ function(React, $, _,
     setISBN: function(event) {
       this.props.bookTitle.set("isbn", event.target.value);
     },
+    generateModalId: function(){
+      return "commentModal" + this.props.bookTitle.id;
+    },
     render: function() {
       var have_state_el = <input type="button" className="btn btn-success" value="自分持ってます" onClick={this.toHasState}/>;
       if (this.state.hasBook) {
         have_state_el = <input type="button" className="btn btn-danger" value="捨てた" onClick={this.toNotHaveState}/>;
       };
 
+      var dataId     = this.generateModalId();
+
       return (
         <tr>
-          <td>
+          <td className="col-md-2">
             <div>
               {have_state_el}
             </div>
           </td>
-          <td>
+          <td className="col-md-6">
             <div>
               <input type="text" defaultValue={this.props.bookTitle.get("name")} className="form-control" ref="name" onChange={this.setName}/>
             </div>
           </td>
-          <td>
+          <td className="col-md-2">
             <div>
               <input type="text" defaultValue={this.props.bookTitle.get("isbn")} className="form-control" ref="isbn" onChange={this.setISBN}/>
             </div>
           </td>
-          <td>
+          <td className="col-md-1">
+            <div>
+              <Comment dataId={dataId} parent={this.props.bookTitle} buttonClass="btn-info"/>
+            </div>
+          </td>
+          <td className="col-md-1">
             <div>
               <input type="button" className="btn btn-danger" value="削除" onClick={this.handleDelete}/>
             </div>
@@ -257,6 +269,7 @@ function(React, $, _,
       );
     }
   });
+
 
   // ****************************************************
   // 輪読対象書籍の登録フォーム
