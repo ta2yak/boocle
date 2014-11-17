@@ -1,0 +1,13 @@
+bower_components/**/*.md
+bower_components/**/*.html
+bower_components/**/*.json
+bower_components/**/*.less
+bower_components/**/*.coffee
+bower_components/**/CNAME
+bower_components/**/LICENSE
+
+
+bower_components/**/*.editorconfig
+bower_components/**/*.yml
+bower_components/**/*.map
+bower_components/**/*.eslintrc

@@ -23,7 +23,9 @@ define(['parse'],function(Parse){
 	      });
 
 		},
-		toFinish: function(successCallback, failedCallback){
+		toFinish: function(args, successCallback, failedCallback){
+	      this.set("rating", args.rating);
+	      this.set("comment", args.comment);
 	      this.set("isFinish", true);
 	      this.set("finishedAt", new Date());
 	      this.save({
