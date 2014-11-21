@@ -192,6 +192,9 @@ function(React, $, _, moment,
       }.bind(this));
 
     },
+    openAmazon: function(){
+      window.open('http://www.amazon.co.jp/gp/search/ref=sr_adv_b/?field-isbn='+this.state.bookTitle.get("isbn"));
+    },
     render: function() {
 
       var members = this.state.members;
@@ -227,7 +230,7 @@ function(React, $, _, moment,
         <li className="list-group-item">
           <div className="row">
             <div className="col-xs-8">
-              {this.state.bookTitle ? <label className="pull-left">{this.state.bookTitle.get("name")}</label> : null }
+              {this.state.bookTitle ? <label className="pull-left"><a onClick={this.openAmazon}>{this.state.bookTitle.get("name")}</a></label> : null }
             </div>
             <div className="col-xs-4">
               {this.state.group ? <label className="pull-right">{this.state.group.get("name")}</label> : null }

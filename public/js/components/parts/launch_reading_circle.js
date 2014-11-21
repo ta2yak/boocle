@@ -331,6 +331,9 @@ function(React, $, _,
     generateModalId: function(){
       return "startModal" + (this.state.book ? this.state.book.id : 0);
     },
+    openAmazon: function(){
+      window.open('http://www.amazon.co.jp/gp/search/ref=sr_adv_b/?field-isbn='+this.state.book.get("isbn"));
+    },
     render: function() {
 
       // 一意のIDを生成する
@@ -352,7 +355,7 @@ function(React, $, _,
 
       return (
         <tr>
-          <th>{this.state.book ? this.state.book.get("name") : ""}</th>
+          <th><a onClick={this.openAmazon}>{this.state.book ? this.state.book.get("name") : ""}</a></th>
           <th>{this.state.owner ? this.state.owner.get("screenname") : ""}</th>
           <th>
             <div>

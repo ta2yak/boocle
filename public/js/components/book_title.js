@@ -230,6 +230,9 @@ function(React, $, _,
     generateModalId: function(){
       return "commentModal" + this.props.bookTitle.id;
     },
+    openAmazon: function(){
+      window.open('http://www.amazon.co.jp/gp/search/ref=sr_adv_b/?field-isbn='+this.props.bookTitle.get("isbn"));
+    },
     render: function() {
       var have_state_el = <input type="button" className="btn btn-success" value="自分持ってます" onClick={this.toHasState}/>;
       if (this.state.hasBook) {
@@ -237,6 +240,7 @@ function(React, $, _,
       };
 
       var dataId     = this.generateModalId();
+
 
       return (
         <tr>
@@ -251,8 +255,11 @@ function(React, $, _,
             </div>
           </td>
           <td className="col-md-2">
-            <div>
+            <div className="input-group">
               <input type="text" defaultValue={this.props.bookTitle.get("isbn")} className="form-control" ref="isbn" onChange={this.setISBN}/>
+              <span className="input-group-addon">
+                <a onClick={this.openAmazon}><span className="glyphicon glyphicon-new-window" aria-hidden="true"></span></a>
+              </span>
             </div>
           </td>
           <td className="col-md-1">
